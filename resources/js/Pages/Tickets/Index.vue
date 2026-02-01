@@ -1,23 +1,19 @@
 <script setup>
-// Importy komponentów UI (dostarczone przez Breeze)
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 
-// Odbieramy dane z PHP (props = parametry funkcji w Compose)
 defineProps({
     tickets: Array
 });
 
-// Stan formularza (reaktywny)
 const form = useForm({
     title: '',
     description: '',
 });
 
-// Funkcja wysyłania (submit)
 const submit = () => {
     form.post(route('tickets.store'), {
-        onSuccess: () => form.reset(), // Wyczyść po sukcesie
+        onSuccess: () => form.reset(),
     });
 };
 </script>
@@ -40,12 +36,10 @@ const submit = () => {
                                 class="w-full border-gray-300 rounded-md shadow-sm">
                             <div v-if="form.errors.title" class="text-red-500 text-sm">{{ form.errors.title }}</div>
                         </div>
-
                         <div>
                             <textarea v-model="form.description" placeholder="Opis..." 
                                 class="w-full border-gray-300 rounded-md shadow-sm"></textarea>
                         </div>
-
                         <button type="submit" :disabled="form.processing"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                             Wyślij
@@ -53,13 +47,25 @@ const submit = () => {
                     </form>
                 </div>
 
-                <div class="bg-white shadow sm:rounded-lg p-6">
-                    <div v-for="ticket in tickets" :key="ticket.id" class="border-b py-4 last:border-b-0">
-                        <h3 class="font-bold text-lg">{{ ticket.title }}</h3>
-                        <p class="text-gray-600">{{ ticket.description }}</p>
-                        <span class="text-xs bg-gray-200 px-2 py-1 rounded">Status: {{ ticket.status }}</span>
+                <div class="bg-white shadow sm:rounded-lg overflow-hidden">
+                    
+                    <div v-for="ticket in tickets" :key="ticket.id" class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        
+                        <div>
+                            <h3 class="font-bold text-lg">{{ ticket.title }}</h3>
+                            <p class="text-gray-600">{{ ticket.description }}</p>
+                        </div>
+
+                        <div class="flex items-center">
+                            <span class="px-3 py-1 text-xs rounded-full uppercase font-semibold"
+                                :class="ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                                {{ ticket.status }}
+                            </span>
+                        </div>
+
+                    </div> <div v-if="tickets.length === 0" class="p-6 text-center text-gray-500">
+                        Brak zgłoszeń.
                     </div>
-                    <div v-if="tickets.length === 0" class="text-gray-500">Brak zgłoszeń.</div>
                 </div>
 
             </div>

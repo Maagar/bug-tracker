@@ -11,7 +11,9 @@ class TicketController extends Controller
     public function index()
     {
         return Inertia::render('Tickets/Index', [
-            'tickets' => Ticket::latest()->get() 
+            'tickets' => Ticket::latest()
+            ->where('status', 'open')
+            ->get() 
         ]);
     }
 
@@ -24,6 +26,12 @@ class TicketController extends Controller
 
         Ticket::create($validated);
 
+        return to_route('tickets.index');
+    }
+
+    public function destroy(Ticket $ticket)
+    {
+        $ticket->delete();
         return to_route('tickets.index');
     }
 }
