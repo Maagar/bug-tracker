@@ -19,6 +19,7 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Zgłoszenia" />
 
     <AuthenticatedLayout>
@@ -32,12 +33,12 @@ const submit = () => {
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <form @submit.prevent="submit" class="space-y-4">
                         <div>
-                            <input v-model="form.title" type="text" placeholder="Tytuł błędu" 
+                            <input v-model="form.title" type="text" placeholder="Tytuł błędu"
                                 class="w-full border-gray-300 rounded-md shadow-sm">
                             <div v-if="form.errors.title" class="text-red-500 text-sm">{{ form.errors.title }}</div>
                         </div>
                         <div>
-                            <textarea v-model="form.description" placeholder="Opis..." 
+                            <textarea v-model="form.description" placeholder="Opis..."
                                 class="w-full border-gray-300 rounded-md shadow-sm"></textarea>
                         </div>
                         <button type="submit" :disabled="form.processing"
@@ -48,22 +49,35 @@ const submit = () => {
                 </div>
 
                 <div class="bg-white shadow sm:rounded-lg overflow-hidden">
-                    
-                    <div v-for="ticket in tickets" :key="ticket.id" class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        
+
+                    <div v-for="ticket in tickets" :key="ticket.id"
+                        class="p-6 border-b border-gray-200 flex justify-between items-center">
+
                         <div>
                             <h3 class="font-bold text-lg">{{ ticket.title }}</h3>
                             <p class="text-gray-600">{{ ticket.description }}</p>
                         </div>
 
-                        <div class="flex items-center">
-                            <span class="px-3 py-1 text-xs rounded-full uppercase font-semibold"
+                        <div class="flex items-center space-x-4"> <span
+                                class="px-3 py-1 text-xs rounded-full uppercase font-semibold"
                                 :class="ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
                                 {{ ticket.status }}
                             </span>
+                            <Link :href="route('tickets.edit', ticket.id)"
+                                class="text-indigo-600 hover:text-indigo-900 font-bold text-sm">
+                                Edytuj
+                            </Link>
+
+                            <Link :href="route('tickets.destroy', ticket.id)" method="delete" as="button"
+                                preserve-scroll class="text-red-600 hover:text-red-900 font-bold text-sm">
+                                Usuń
+                            </Link>
+
                         </div>
 
-                    </div> <div v-if="tickets.length === 0" class="p-6 text-center text-gray-500">
+                    </div>
+
+                    <div v-if="tickets.length === 0" class="p-6 text-center text-gray-500">
                         Brak zgłoszeń.
                     </div>
                 </div>

@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewTicketCreated;
 
 class TicketController extends Controller
 {
     public function index()
     {
         return Inertia::render('Tickets/Index', [
-            'tickets' => Ticket::latest()
-            ->where('status', 'open')
-            ->get() 
+            'tickets' => Ticket::latest()->get()
         ]);
     }
 
@@ -24,7 +24,9 @@ class TicketController extends Controller
             'description' => 'required|string',
         ]);
 
-        Ticket::create($validated);
+        $ticket = Ticket::create($validated);
+
+        Mail::to('admin@bugtracker.com')->send(new NewTicketCreated($ticket));
 
         return to_route('tickets.index');
     }
@@ -32,6 +34,26 @@ class TicketController extends Controller
     public function destroy(Ticket $ticket)
     {
         $ticket->delete();
+        return to_route('tickets.index');
+    }
+
+    public function edit(Ticket $ticket)
+    {
+        return Inertia::render('Tickets/Edit', [
+            'ticket' => $ticket
+        ]);
+    }
+
+    public function update(Request $request, Ticket $ticket)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|in:open,closed,in_progress',
+        ]);
+
+        $ticket->update($validated);
+        
         return to_route('tickets.index');
     }
 }
