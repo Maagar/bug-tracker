@@ -2,19 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use App\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TicketApiTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase;
 
-        $response->assertStatus(200);
+    public function test_api_returns_tickets_list()
+    {
+        $user = User::factory()->create();
+        
+        Ticket::factory()->count(3)->create();
+
+        $response = $this->actingAs($user)->getJson('/api/tickets');
+
+        $response->assertStatus(200)
+                 ->assertJsonCount(3, 'data');
     }
 }
