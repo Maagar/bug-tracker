@@ -25,6 +25,8 @@ class TicketController extends Controller
             'description' => 'required|string',
         ]);
 
+        $validated['user_id'] = $request->user()->id;
+
         $ticket = Ticket::create($validated);
 
         Mail::to('admin@bugtracker.com')->send(new NewTicketCreated($ticket));

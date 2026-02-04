@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Tytuł zgłoszenia
-            $table->text('description'); // Opis
-            $table->string('status')->default('open'); // Status
-            $table->timestamps(); // Utworzy created_at i updated_at
+            $table->string('title');
+            $table->text('description');
+            $table->string('status')->default('open');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 

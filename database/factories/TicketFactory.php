@@ -20,6 +20,7 @@ class TicketFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'status' => 'open',
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }
