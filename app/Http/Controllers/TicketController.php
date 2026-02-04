@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewTicketCreated;
+use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
@@ -33,6 +34,7 @@ class TicketController extends Controller
 
     public function destroy(Ticket $ticket)
     {
+        Gate::authorize('delete', $ticket);
         $ticket->delete();
         return to_route('tickets.index');
     }
