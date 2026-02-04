@@ -1,3 +1,45 @@
-### Pobierz wszystkie zgłoszenia
-GET http://127.0.0.1:8000/api/tickets
-Accept: application/json
+@host = http://localhost:8000
+@contentType = application/json
+@accept = application/json
+
+# @name login
+POST {{host}}/api/login
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+{
+    "email": "test@gmail.com",
+    "password": "test123321"
+}
+
+###
+
+@authToken = {{login.response.body.access_token}}
+
+###
+
+GET {{host}}/api/tickets
+Accept: {{accept}}
+Authorization: Bearer {{authToken}}
+###
+
+GET {{host}}/api/tickets/2
+Accept: {{accept}}
+Authorization: Bearer {{authToken}}
+###
+
+PUT {{host}}/api/tickets/2
+Content-Type: {{contentType}}
+Accept: {{accept}}
+Authorization: Bearer {{authToken}}
+{
+    "title": "Pilna awaria systemu (Update)",
+    "description": "Zaktualizowany opis błędu przez REST Clienta."
+}
+
+###
+
+
+DELETE {{host}}/api/tickets/5
+Accept: {{accept}}
+Authorization: Bearer {{authToken}}
