@@ -1,15 +1,36 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import debounce from 'lodash/debounce'
+import { ref, watch } from 'vue';
 
-defineProps({
-    tickets: Array
+const props = defineProps({
+    tickets: Array,
+    filters: Object
 });
 
 const form = useForm({
     title: '',
     description: '',
 });
+
+const search = ref(props.filters.search || '')
+const status = ref(props.filters.status || '')
+
+watch(
+    [search, status],
+    debounce(() => {
+        router.get(
+            route('tickets.index'),
+            { search: search.value, status: status.value },
+            {
+                preserveState: true,
+                replace: true,
+                preserveScroll: true
+            }
+        )
+    }, 500)
+)
 
 const submit = () => {
     form.post(route('tickets.store'), {
@@ -48,10 +69,21 @@ const submit = () => {
                     </form>
                 </div>
 
-                <div class="bg-white shadow sm:rounded-lg overflow-hidden">
+                <div class="flex gap-4 mb-4">
+                    <input v-model="search" type="text" placeholder="Szukaj ticketu..."
+                        class="border-gray-300 rounded-md shadow-sm w-full sm:w-64">
 
+                    <select v-model="status" class="border-gray-300 rounded-md shadow-sm w-full sm:w=48">
+                        <option value="">Wszystkie statusy</option>
+                        <option value="open">Otwarty</option>
+                        <option value="in_progress">W trakcie</option>
+                        <option value="closed">Zamknięty</option>
+                    </select>
+                </div>
+
+                <div class="bg-white shadow sm:rounded-lg overflow-hidden">
                     <div v-for="ticket in tickets" :key="ticket.id"
-                        class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        class="p-6 border-b border-gray-200 flex justify-between items-center transition hover:bg-gray-50">
 
                         <div>
                             <h3 class="font-bold text-lg">{{ ticket.title }}</h3>

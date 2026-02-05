@@ -19,4 +19,16 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['status'] ?? false) {
+            $query->where('status', $filters['status']);
+        }
+
+        if ($filters['search'] ?? false) {
+            $query->where('title', 'like', '%' . $filters['search'] . '%')
+                ->orWhere('description', 'like', '%' . $filters['search'] . '%');
+        }
+    }
 }

@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return Inertia::render('Tickets/Index', [
-            'tickets' => Ticket::latest()->get()
+            'tickets' => Ticket::latest()->filter(request(['search', 'status']))->get(),
+
+            'filters' => $request->only(['search', 'status'])
         ]);
     }
 
@@ -57,7 +59,7 @@ class TicketController extends Controller
         ]);
 
         $ticket->update($validated);
-        
+
         return to_route('tickets.index');
     }
 }
