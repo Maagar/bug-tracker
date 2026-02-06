@@ -12,12 +12,17 @@ class Ticket extends Model
         'title',
         'description',
         'status',
-        'user_id'
+        'user_id',
+        'assignee_id'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function assignee()
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
     }
 
     public function scopeFilter($query, array $filters)

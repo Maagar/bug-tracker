@@ -88,6 +88,19 @@ const submit = () => {
                         <div>
                             <h3 class="font-bold text-lg">{{ ticket.title }}</h3>
                             <p class="text-gray-600">{{ ticket.description }}</p>
+                            <div class="text-xs text-gray-500 mt-2 flex gap-4">
+                                <span>
+                                    Autor: <span class="font-semibold text-gray-700">{{ ticket.user.name }}</span>
+                                </span>
+
+                                <span v-if="ticket.assignee">
+                                    Przypisany do: <span class="font-bold text-blue-600">{{ ticket.assignee.name
+                                        }}</span>
+                                </span>
+                                <span v-else class="text-gray-400 italic">
+                                    --Nieprzypisany--
+                                </span>
+                            </div>
                         </div>
 
                         <div class="flex items-center space-x-4"> <span
@@ -95,6 +108,11 @@ const submit = () => {
                                 :class="ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
                                 {{ ticket.status }}
                             </span>
+                            <Link :href="route('tickets.update', ticket.id)" method="patch"
+                                :data="{ assignee_id: $page.props.auth.user.id }" as="button" preserve-scroll
+                                class="text-teal-600 hover:text-teal-900 font-bold text-sm border border-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition">
+                                Przypisz do mnie
+                            </Link>
                             <Link :href="route('tickets.edit', ticket.id)"
                                 class="text-indigo-600 hover:text-indigo-900 font-bold text-sm">
                                 Edytuj
