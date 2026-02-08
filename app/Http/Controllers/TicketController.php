@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTicketRequest;
+use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewTicketCreated;
+use App\Services\TicketService;
 use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
+    public function __construct(protected TicketService $ticketService) {}
+
     public function index(Request $request)
     {
         return Inertia::render('Tickets/Index', [
@@ -23,18 +28,12 @@ class TicketController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $validated['user_id'] = $request->author()->id;
-
-        $ticket = Ticket::create($validated);
-
-        Mail::to('admin@bugtracker.com')->send(new NewTicketCreated($ticket));
+        $this->ticketService->createTicket(
+            $request->validated(),
+            $request->user()
+        );
 
         return to_route('tickets.index');
     }
@@ -53,20 +52,9 @@ class TicketController extends Controller
         ]);
     }
 
-    public function update(Request $request, Ticket $ticket)
+    public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'status' => 'sometimes|in:open,closed,in_progress',
-            'assignee_id' => 'sometimes|nullable|exists:users,id'
-        ]);
-
-        $ticket->update($validated);
-
-        if ($ticket->wasChanged('assignee_id') && $ticket->assignee_id != null) {
-            $ticket->update(['status' => 'in_progress']);
-        }
+        $this->ticketService->updateTicket($ticket, $request->validated());
 
         return to_route('tickets.index');
     }
