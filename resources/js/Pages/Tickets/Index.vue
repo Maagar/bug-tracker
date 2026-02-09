@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce'
 import { ref, watch } from 'vue';
 
 const props = defineProps({
-    tickets: Array,
+    tickets: Object,
     filters: Object
 });
 
@@ -82,7 +82,7 @@ const submit = () => {
                 </div>
 
                 <div class="bg-white shadow sm:rounded-lg overflow-hidden">
-                    <div v-for="ticket in tickets" :key="ticket.id"
+                    <div v-for="ticket in tickets.data" :key="ticket.id"
                         class="p-6 border-b border-gray-200 flex justify-between items-center transition hover:bg-gray-50">
 
                         <div>
@@ -95,7 +95,7 @@ const submit = () => {
 
                                 <span v-if="ticket.assignee">
                                     Przypisany do: <span class="font-bold text-blue-600">{{ ticket.assignee.name
-                                        }}</span>
+                                    }}</span>
                                 </span>
                                 <span v-else class="text-gray-400 italic">
                                     --Nieprzypisany--
@@ -113,13 +113,13 @@ const submit = () => {
                                 class="text-teal-600 hover:text-teal-900 font-bold text-sm border border-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition">
                                 Przypisz do mnie
                             </Link>
-                            <Link :href="route('tickets.edit', ticket.id)"
+                            <Link v-if="ticket.can.update" :href="route('tickets.edit', ticket.id)"
                                 class="text-indigo-600 hover:text-indigo-900 font-bold text-sm">
                                 Edytuj
                             </Link>
 
-                            <Link :href="route('tickets.destroy', ticket.id)" method="delete" as="button"
-                                preserve-scroll class="text-red-600 hover:text-red-900 font-bold text-sm">
+                            <Link v-if="ticket.can.delete" :href="route('tickets.destroy', ticket.id)" method="delete"
+                                as="button" preserve-scroll class="text-red-600 hover:text-red-900 font-bold text-sm">
                                 Usuń
                             </Link>
 

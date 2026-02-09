@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\NewTicketCreated;
 use App\Services\TicketService;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,12 +17,13 @@ class TicketController extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Tickets/Index', [
-            'tickets' => Ticket::with('user:id,name', 'assignee:id,name')
+        $tickets = Ticket::with('user:id,name', 'assignee:id,name')
                 ->latest()
                 ->filter(request(['search', 'status']))
-                ->get(),
-
+                ->get();
+                
+        return Inertia::render('Tickets/Index', [
+            'tickets' => TicketResource::collection($tickets),
             'filters' => $request->only(['search', 'status'])
         ]);
     }
@@ -54,6 +54,8 @@ class TicketController extends Controller
 
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
+        Gate::authorize('update', $ticket);
+
         $this->ticketService->updateTicket($ticket, $request->validated());
 
         return to_route('tickets.index');

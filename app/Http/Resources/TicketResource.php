@@ -11,10 +11,17 @@ class TicketResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'subject' => $this->title,
+            'title' => $this->title,
             'description' => $this->description,
+            'status' => $this->status,
             'created_at_human' => $this->created_at->diffForHumans(),
             'is_urgent' => $this->status === 'critical',
+            'user' => $this->user,
+            'assignee' => $this->assignee,
+            'can' => [
+                'delete' => $request->user()->can('delete', $this->resource),
+                'update' => $request->user()->can('update', $this->resource),
+            ]
         ];
     }
 }
