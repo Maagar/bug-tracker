@@ -9,6 +9,7 @@ uses(RefreshDatabase::class);
 test('User can create a ticket', function () {
     $user = User::factory()->create();
 
+    /** @var \Tests\TestCase $this */
     $response = $this->actingAs($user)
         ->post(route('tickets.store'), [
             'title' => "testowy ticket",
@@ -28,6 +29,7 @@ test('number of tickets increases after creating a ticket', function () {
 
     $initialCount = Ticket::count();
 
+    /** @var \Tests\TestCase $this */
     $response = $this->actingAs($user)->post(route('tickets.store'), [
         'title' => 'nowy ticket',
         'description' => 'opis'
@@ -43,6 +45,7 @@ test('user can\'t delete another user\'s ticket', function () {
     $ticket = Ticket::factory()->create([
         'user_id' => $secondUser->id
     ]);
+    /** @var \Tests\TestCase $this */
     $response = $this->actingAs($user)
         ->delete(route('tickets.destroy', $ticket));
 

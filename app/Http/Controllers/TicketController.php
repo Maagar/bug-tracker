@@ -47,6 +47,7 @@ class TicketController extends Controller
 
     public function edit(Ticket $ticket)
     {
+        Gate::authorize('update', $ticket);
         return Inertia::render('Tickets/Edit', [
             'ticket' => $ticket
         ]);
